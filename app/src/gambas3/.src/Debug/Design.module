@@ -1017,6 +1017,7 @@ Private Sub Start(sCmd As String)
   Dim iCurrentArg As Integer
   Dim aArguments As String[][]
   Dim sBrowser As String
+  Dim sRemotePort As String
 
   If Project.Running Then Return
   
@@ -1039,6 +1040,9 @@ Private Sub Start(sCmd As String)
     sRemoteServer = Project.Config["/Debug/RemoteServer"]
     sRemoteFolder = Project.Config["/Debug/RemoteDirectory"]
     sRemoteUser = Project.Config["/Debug/RemoteUser"]
+    sRemotePort = Project.Config["/Debug/RemotePort"]
+    sRemotePassword = Project.Config["/Debug/RemotePsswd"]
+
     Try sRemotePassword = Desktop.Passwords[Project.Name &/ "RemoteDebug"]
     
     ' Create the remote directory and the remote fifo
@@ -1053,7 +1057,7 @@ Private Sub Start(sCmd As String)
     
     sFifo = sRemoteFolder &/ ".remote."
     
-    aExec = ["ssh", "-q", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer, 
+    aExec = ["ssh", "-p", sRemotePort, "-q", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer,
       "mkdir -p " & Shell(sRemoteFolder) & " && " &
       "rm -f " & Shell(sFifo & "in") & " " & Shell(sFifo & "out") & " && " &
       "mkfifo " & Shell(sFifo & "in") & " " & Shell(sFifo & "out")]
@@ -1070,7 +1074,7 @@ Private Sub Start(sCmd As String)
     ' Copy the executable to the remote server
     
     $sRemoteBuffer = ""
-    hCopyProcess = Exec ["scp", "-q", "-o", "StrictHostKeyChecking=no", Project.GetExecPath(), sRemoteDebuggerHelper, sRemoteUser & "@" & sRemoteServer & ":" & sRemoteFolder] For Input Output As "RemoteProcess"
+    hCopyProcess = Exec ["scp", "-P", sRemotePort, "-q", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "-r", Project.GetExecPath(), sRemoteDebuggerHelper, Project.Dir &/ "assets", sRemoteUser & "@" & sRemoteServer & ":" & sRemoteFolder] For Input Output As "RemoteProcess"
     hCopyProcess.Expect("password:", sRemotePassword)
     hCopyProcess.Wait
     
@@ -1140,7 +1144,7 @@ Private Sub Start(sCmd As String)
     If Profiling Then FProfile.CleanProfileFiles
   
     If $bRemote Then
-      aExec = ["gbr" & System.Version]
+      aExec = [System.Path &/ "bin/gbr" & System.Version]
     Else
       aExec = [System.Path &/ "bin/gbx" & System.Version]
     Endif
@@ -1204,7 +1208,7 @@ Private Sub Start(sCmd As String)
   
     If $bRemote Then
       
-      aRemoteCmd = ["ssh", "-q", "-t", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer]
+      aRemoteCmd = ["ssh", "-p", sRemotePort, "-q", "-t","-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer]
       aRemoteCmd.Insert(aEnv)
       aEnv.Clear
       aExec.Insert(aRemoteCmd, 0)
@@ -1288,7 +1292,7 @@ Private Sub Start(sCmd As String)
     If $bRemote Then
       
       $bRemoteFifoAuth = False
-      $hRemoteFifo = Exec ["ssh", "-q", "-t", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer, sRemoteFolder &/ File.Name($sRemoteDebuggerHelper)] For Input Output As "RemoteFifo"
+      $hRemoteFifo = Exec ["ssh", "-p", sRemotePort, "-q", "-t", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", sRemoteUser & "@" & sRemoteServer, sRemoteFolder &/ File.Name($sRemoteDebuggerHelper)] For Input Output As "RemoteFifo"
       $hRemoteFifo.Term.Echo = False
       $hRemoteFifo.Expect("password:", sRemotePassword)
       

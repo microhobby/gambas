@@ -360,7 +360,6 @@ void gKey::setActiveControl(gControl *control)
 			gtk_im_context_reset(_im_context);
 			gtk_im_context_set_client_window (_im_context, gtk_widget_get_window(control->widget));
 			gtk_im_context_reset(_im_context);
-			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
 			//slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context));
 			_im_is_xim = FALSE;

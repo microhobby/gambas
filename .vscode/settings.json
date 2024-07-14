@@ -1,0 +1,24 @@
+{
+    "explorer.excludeGitIgnore": true,
+    "C_Cpp.inlayHints.autoDeclarationTypes.enabled": true,
+    "C_Cpp.inlayHints.parameterNames.enabled": true,
+    "C_Cpp.inlayHints.autoDeclarationTypes.showOnLeft": true,
+    "files.associations": {
+        "Dockerfile*": "dockerfile",
+        "Containerfile*": "dockerfile",
+        "docker-compose*": "yaml",
+        "*.scr": "shellscript",
+        "*defconfig*": "kconfig",
+        "*.build": "powershell",
+        "*.run": "powershell",
+        "*COMMIT_EDITMSG*": "git-commit",
+        ".wslconfig": "ini",
+        "*.defs": "makefile",
+        "*.ld": "linkerscript",
+        ".env*": "dotenv",
+        "stddef.h": "c",
+        "main.h": "c",
+        "gb_common.h": "c",
+        "gb.gtk.platform.h": "c"
+    }
+}
